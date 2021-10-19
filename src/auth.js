@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const localStrategy = require('passport-local').Strategy;
 
 //htpps://bcrypt-generator.com
@@ -25,7 +25,7 @@ passport.serializaUser((user, done)=>{
     done(null,users._id);
 })
 
-//faz o caminho inverso do serializaUser
+//faz o caminho inverso (recupera as informações gravadas) do serializaUser
 passport.deserializaUser((id, done)=>{
     try {
         const user = findUserById(id);
@@ -37,7 +37,21 @@ passport.deserializaUser((id, done)=>{
     }
 })
 
+passport.use(new localStrategy({
+username: 'username',
+password: 'password'
+},(username, password, done)=>{
+    try {
+        const user= findUser(username);
+        if (!user) return done(null, false);
+        const isValid = bcrypt.compareSync(password, user.password);
+        if (!isValid) return done(null, false);
+        return done(null, user); // sucesso
 
-
+    } catch (error) {
+        console.log(error);
+        return done(error, null);
+    }
+}))
 
 }
