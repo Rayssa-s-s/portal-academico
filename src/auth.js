@@ -15,18 +15,18 @@ function findUser(username){
 }
 
 function findUserById(id) {
-    return users.find(item => item.id === id);
+    return users.find(item => item._id === id);
 }
 
 module.exports = (passport) => {
 
 // salva um cookie no front e uma sessão no hack
-passport.serializaUser((user, done)=>{
+passport.serializeUser((user, done)=>{
     done(null,users._id);
 })
 
 //faz o caminho inverso (recupera as informações gravadas) do serializaUser
-passport.deserializaUser((id, done)=>{
+passport.deserializeUser((id, done)=>{
     try {
         const user = findUserById(id);
         done(null, user);
